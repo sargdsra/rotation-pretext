@@ -11,8 +11,7 @@ class RotationLoader(Dataset):
         file_ind = open(self.root_dir)
         self.data = [line.rstrip() for line in file_ind.readlines()]
         file_ind.close()
-        self.color_transform = torchvision.transforms.ColorJitter(brightness=0.4, contrast=0.4, saturation=0.4, hue=0.4)
-        # self.flips = [torchvision.transforms.RandomHorizontalFlip(), torchvision.transforms.RandomVerticalFlip()]
+        self.color_transform = torchvision.transforms.ColorJitter(brightness = 0.4, contrast = 0.4, saturation = 0.4, hue = 0.4)
         self.normalize = torchvision.transforms.Normalize([0.485, 0.456, 0.406], [0.229, 0.224, 0.225])
         self.orig_size = 300
         self.crop_size = 224
@@ -36,24 +35,13 @@ class RotationLoader(Dataset):
         """
         original = self.get_image(self.data[index])
         image = torchvision.transforms.Resize((self.orig_size, self.orig_size))(original)
-        image_part = torchvision.transforms.RandomCrop((self.res_crop_size, self.res_crop_size))(image_part)
+        image_part = torchvision.transforms.RandomCrop((self.res_crop_size, self.res_crop_size))(image)
         rotation = torchvision.transforms.Resize((self.res_crop_size, self.res_crop_size))(image_part)
-        # augmentation - collor jitter
-        # image = self.color_transform(image)
-        rotation = self.color_transform(rotation)
-        # augmentation - flips
-        # image = self.flips[0](image)
-        # image = self.flips[1](image)
-        # augmentation - rotation
+        rotation = self.color_transform(rotation)        
         angle = random.choice(self.angles)
         angle_index = self.angles.index(angle)
         rotation = torchvision.transforms.functional.rotate(rotation, angle)
-
-        # to tensor
-        # image = torchvision.transforms.functional.to_tensor(image)
         rotation = torchvision.transforms.functional.to_tensor(rotation)
-        # normalize
-        # image = self.normalize(image)
         rotation = self.normalize(rotation)
 
         return {'rotation': rotation, 'angle_index': angle_index}
