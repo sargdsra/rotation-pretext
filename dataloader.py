@@ -43,5 +43,4 @@ class RotationLoader(Dataset):
         rotation = torchvision.transforms.functional.rotate(rotation, angle)
         rotation = torchvision.transforms.functional.to_tensor(rotation)
         rotation = self.normalize(rotation)
-
         return {'rotation': rotation, 'angle_index': angle_index}
